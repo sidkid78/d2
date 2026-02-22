@@ -5,9 +5,10 @@ import { ShieldCheck } from 'lucide-react';
 interface Props {
     onSign: (data: { typedName: string; signatureImageDataUrl: string; consent: boolean }) => void;
     buyerName: string;
+    isLoading?: boolean;
 }
 
-const StepSign: React.FC<Props> = ({ onSign, buyerName }) => {
+const StepSign: React.FC<Props> = ({ onSign, buyerName, isLoading = false }) => {
     const sigCanvas = useRef<SignatureCanvas>(null);
     const [typedName, setTypedName] = useState(buyerName);
     const [consent, setConsent] = useState(false);
@@ -17,8 +18,7 @@ const StepSign: React.FC<Props> = ({ onSign, buyerName }) => {
     useEffect(() => {
         const handleResize = () => {
             if (sigCanvas.current) {
-                // We don't clear on resize to preserve the signature, but we could if needed
-                // sigCanvas.current.clear();
+                // Adjusting canvas size if needed
             }
         };
         window.addEventListener('resize', handleResize);
@@ -27,10 +27,13 @@ const StepSign: React.FC<Props> = ({ onSign, buyerName }) => {
 
     const handleClear = (e: React.MouseEvent) => {
         e.preventDefault();
+        if (isLoading) return;
         sigCanvas.current?.clear();
     };
 
     const handleSubmit = () => {
+        if (isLoading) return;
+
         if (!consent) {
             setError('You must agree to the terms to proceed.');
             return;
@@ -46,14 +49,24 @@ const StepSign: React.FC<Props> = ({ onSign, buyerName }) => {
 
         setError('');
 
-        // Get the base64 image of the signature
-        const signatureImageDataUrl = sigCanvas.current?.getTrimmedCanvas().toDataURL('image/png') || '';
+        try {
+            // Get the base64 image of the signature
+            const canvas = sigCanvas.current?.getTrimmedCanvas();
+            if (!canvas) {
+                setError('Failed to capture signature canvas. Please try again.');
+                return;
+            }
+            const signatureImageDataUrl = canvas.toDataURL('image/png');
 
-        onSign({
-            typedName,
-            signatureImageDataUrl,
-            consent
-        });
+            onSign({
+                typedName,
+                signatureImageDataUrl,
+                consent
+            });
+        } catch (err) {
+            console.error('Canvas error:', err);
+            setError('Signature capture failed. Please ensure your browser supports canvas.');
+        }
     };
 
     return (
@@ -72,9 +85,10 @@ const StepSign: React.FC<Props> = ({ onSign, buyerName }) => {
                     <label className="block text-sm font-bold text-slate-700 mb-2">Full Legal Name</label>
                     <input
                         type="text"
+                        disabled={isLoading}
                         value={typedName}
                         onChange={(e) => setTypedName(e.target.value)}
-                        className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-shadow"
+                        className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-shadow disabled:opacity-50"
                         placeholder="Type your name"
                     />
                 </div>
@@ -82,15 +96,16 @@ const StepSign: React.FC<Props> = ({ onSign, buyerName }) => {
                 <div>
                     <div className="flex justify-between items-end mb-2">
                         <label className="block text-sm font-bold text-slate-700">Digital Signature</label>
-                        <button
-                            onClick={handleClear}
-                            className="text-xs text-slate-400 hover:text-slate-600 font-medium transition-colors"
-                        >
-                            Clear
-                        </button>
+                        {!isLoading && (
+                            <button
+                                onClick={handleClear}
+                                className="text-xs text-slate-400 hover:text-slate-600 font-medium transition-colors"
+                            >
+                                Clear
+                            </button>
+                        )}
                     </div>
-                    <div className="border-2 border-slate-200 rounded-xl bg-slate-50 overflow-hidden shadow-inner">
-                        {/* Note: In a real app, react-signature-canvas needs specific styling to be responsive */}
+                    <div className={`border-2 border-slate-200 rounded-xl bg-slate-50 overflow-hidden shadow-inner ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}>
                         <SignatureCanvas
                             ref={sigCanvas}
                             penColor="black"
@@ -99,10 +114,11 @@ const StepSign: React.FC<Props> = ({ onSign, buyerName }) => {
                     </div>
                 </div>
 
-                <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 mt-8 group hover:border-slate-300 transition-colors">
+                <div className={`bg-slate-50 p-5 rounded-xl border border-slate-100 mt-8 group hover:border-slate-300 transition-colors ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}>
                     <label className="flex items-start gap-3 cursor-pointer">
                         <input
                             type="checkbox"
+                            disabled={isLoading}
                             checked={consent}
                             onChange={(e) => setConsent(e.target.checked)}
                             className="mt-1 w-5 h-5 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer"
@@ -115,9 +131,19 @@ const StepSign: React.FC<Props> = ({ onSign, buyerName }) => {
 
                 <button
                     onClick={handleSubmit}
-                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-4 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 group mt-4 hover:shadow-md hover:-translate-y-0.5"
+                    disabled={isLoading}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-4 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 group mt-4 hover:shadow-md hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                    <ShieldCheck className="w-5 h-5" /> Protect My Representation
+                    {isLoading ? (
+                        <div className="flex items-center gap-2">
+                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            <span>Recording Protection...</span>
+                        </div>
+                    ) : (
+                        <>
+                            <ShieldCheck className="w-5 h-5" /> Protect My Representation
+                        </>
+                    )}
                 </button>
             </div>
         </div>

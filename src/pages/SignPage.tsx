@@ -19,6 +19,7 @@ export const SignPage: React.FC = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
     const [isSummarizing, setIsSummarizing] = useState(false);
+    const [isSigning, setIsSigning] = useState(false);
 
     useEffect(() => {
         const loadInvite = async () => {
@@ -56,16 +57,23 @@ export const SignPage: React.FC = () => {
 
     const handleSign = async (data: { typedName: string; signatureImageDataUrl: string; consent: boolean }) => {
         if (!invite) return;
+        setIsSigning(true);
+        setError('');
+
         try {
+            console.log('Submitting signature for invite:', invite.id);
             const fullSignatureData: SignatureData = {
                 ...data,
                 signedAtUtc: new Date().toISOString(),
                 userAgent: navigator.userAgent
             };
             const certId = await mockService.signAgreement(invite.id, fullSignatureData);
+            console.log('Signature successful, certId:', certId);
             navigate(`/verify/${certId}`);
-        } catch (err) {
-            setError('Failed to securely sign agreement. Please try again.');
+        } catch (err: any) {
+            console.error('Signing error:', err);
+            setError(err.message || 'Failed to securely sign agreement. Please try again.');
+            setIsSigning(false);
         }
     };
 
@@ -124,7 +132,7 @@ export const SignPage: React.FC = () => {
                             <StepSummary onNext={() => setStep(3)} summarySections={summarySections || invite.templateSnapshot.summarySections} />
                         </div>
                     )}
-                    {step === 3 && <StepSign onSign={handleSign} buyerName={invite.buyerName} />}
+                    {step === 3 && <StepSign onSign={handleSign} buyerName={invite.buyerName} isLoading={isSigning} />}
                 </div>
             </div>
         </div>
