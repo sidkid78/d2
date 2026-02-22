@@ -1,6 +1,6 @@
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, Users } from 'lucide-react';
+import { LayoutDashboard, Users, Sparkles } from 'lucide-react';
 
 export const AgentLayout = () => {
     const { logout, user } = useAuth();
@@ -32,9 +32,9 @@ export const AgentLayout = () => {
                         href="/dwellingly.html"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-brand-600 transition-colors hidden lg:inline-block border border-slate-200 px-2 py-0.5 rounded"
+                        className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-brand-600 transition-colors hidden sm:inline-block border border-slate-200 px-2 py-0.5 rounded ml-2"
                     >
-                        Marketing Site
+                        Experience
                     </a>
                 </div>
                 <div className="flex items-center gap-4">
@@ -58,6 +58,10 @@ export const AgentLayout = () => {
                     <Users size={20} />
                     <span className="text-[10px] font-semibold">Invites</span>
                 </Link>
+                <a href="/dwellingly.html" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1 text-slate-400 hover:text-brand-600 transition-colors">
+                    <Sparkles size={20} />
+                    <span className="text-[10px] font-semibold">Manifesto</span>
+                </a>
             </nav>
         </div >
     );
