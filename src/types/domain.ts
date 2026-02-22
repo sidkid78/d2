@@ -40,6 +40,7 @@ export interface BuyerInvite {
     buyerName: string;
     buyerContact: string; // Email or Phone
     tokenHash: string; // SHA-256
+    rawToken?: string; // Cleartext for mock link generation
     createdAtUtc: string;
     ttlDays: number;
     templateSnapshot: AgreementTemplate;

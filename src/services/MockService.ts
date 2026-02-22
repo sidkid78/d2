@@ -27,6 +27,7 @@ export class MockBuyerEnsureService {
             buyerName: params.buyerName || '',
             buyerContact: params.buyerContact || '',
             tokenHash,
+            rawToken,
             createdAtUtc: new Date().toISOString(),
             ttlDays: 7,
             templateSnapshot: params.templateSnapshot!,

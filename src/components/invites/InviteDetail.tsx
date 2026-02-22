@@ -41,11 +41,11 @@ export const InviteDetail: React.FC = () => {
     if (!invite) return <div className="p-12 text-center text-slate-500">Loading Invite Data...</div>;
 
     const status = deriveStatus(invite);
-    const shareUrl = `${window.location.origin}/sign/${invite.tokenHash}`; // Need raw token in real app
+    const shareUrl = `${window.location.origin}/sign/${invite.rawToken || invite.tokenHash}`;
 
     const copyLink = () => {
         navigator.clipboard.writeText(shareUrl);
-        alert('Link copied to clipboard! (Note: the Raw Token needs to be appended in the actual flow.)');
+        alert('Link copied to clipboard!');
     };
 
     const handleResend = async (type: 'sms' | 'email') => {
