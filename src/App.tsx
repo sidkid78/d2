@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { ErrorBoundary } from './components/shared/ErrorBoundary';
@@ -37,6 +38,7 @@ export default function App() {
             {/* Default Redirect */}
             <Route path="/" element={<Navigate to="/app" replace />} />
           </Routes>
+          <Analytics />
         </BrowserRouter>
       </AuthProvider>
     </ErrorBoundary>
