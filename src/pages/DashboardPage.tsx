@@ -55,7 +55,13 @@ export const DashboardPage: React.FC = () => {
             {/* KPI Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <KpiCard title="Sent (7d)" value={kpis.sentLast7Days} icon={<Send size={20} />} color="text-blue-600 focus-visible:ring-blue-500" />
-                <KpiCard title="Protected (7d)" value={kpis.signedLast7Days} icon={<Shield size={20} />} color="text-emerald-600 focus-visible:ring-emerald-500" />
+                <KpiCard
+                    title="Protected (7d)"
+                    value={kpis.signedLast7Days}
+                    icon={<Shield size={20} />}
+                    color="text-emerald-600 focus-visible:ring-emerald-500"
+                    isProtectedHighlight={true}
+                />
                 <KpiCard title="Conversion" value={`${kpis.conversionRate.toFixed(0)}%`} icon={<CheckCircle size={20} />} color="text-brand-600 focus-visible:ring-brand-500" />
                 <KpiCard title="Avg. Time to Sign" value={kpis.medianTimeToSignMinutes ? `${kpis.medianTimeToSignMinutes.toFixed(0)}m` : '--'} icon={<Clock size={20} />} color="text-amber-600 focus-visible:ring-amber-500" />
             </div>
@@ -105,13 +111,18 @@ export const DashboardPage: React.FC = () => {
     );
 };
 
-const KpiCard = ({ title, value, icon, color }: any) => {
+const KpiCard = ({ title, value, icon, color, isProtectedHighlight }: any) => {
     const bgColor = color.replace('text-', 'bg-').replace('-600', '-100').split(' ')[0];
 
     return (
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+        <div className={`bg-white p-5 rounded-2xl border transition-all ${isProtectedHighlight ? 'border-emerald-200 shadow-lg shadow-emerald-100/50 scale-[1.02]' : 'border-slate-200 shadow-sm'}`}>
             <div className="flex justify-between items-start">
-                <div className={`${color} ${bgColor} p-3 rounded-xl ring-1 ring-inset ring-black/5`}>{icon}</div>
+                <div className={`${color} ${bgColor} p-3 rounded-xl ring-1 ring-inset ring-black/5 relative`}>
+                    {icon}
+                    {isProtectedHighlight && (
+                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white animate-pulse"></span>
+                    )}
+                </div>
             </div>
             <div className="mt-5">
                 <p className="text-3xl font-black text-slate-900 tracking-tight">{value}</p>

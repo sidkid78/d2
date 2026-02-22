@@ -3,13 +3,16 @@ import { useParams, Link } from 'react-router-dom';
 import { mockService } from '../services/MockService';
 import type { BuyerInvite } from '../types/domain';
 import { getBuyerInitials } from '../lib/logic/auditEngine';
-import { ShieldCheck, Calendar, ArrowRight, UserCheck } from 'lucide-react';
+import { ShieldCheck, Calendar, ArrowRight, UserCheck, Download, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { CertificatePrintView } from '../components/buyer/CertificatePrintView';
+import { generatePDFFromElement } from '../lib/utils/pdfGenerator';
 
 export const VerifyPage: React.FC = () => {
     const { certificateId } = useParams<{ certificateId: string }>();
     const [invite, setInvite] = useState<BuyerInvite | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isDownloading, setIsDownloading] = useState(false);
 
     useEffect(() => {
         const fetchCert = async () => {
@@ -107,12 +110,35 @@ export const VerifyPage: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="pt-6 border-t border-slate-100 text-center">
-                        <p className="text-sm text-slate-500 font-medium">This digital certificate verifies active, exclusive representation conforming to local regulations.</p>
+                    <div className="pt-6 border-t border-slate-100 flex flex-col gap-4">
+                        <p className="text-sm text-slate-500 font-medium text-center">This digital certificate verifies active, exclusive representation conforming to local regulations.</p>
+
+                        <button
+                            onClick={async () => {
+                                setIsDownloading(true);
+                                try {
+                                    await generatePDFFromElement('print-certificate', `Dwellingly_Cert_${invite.certificateId}.pdf`);
+                                } finally {
+                                    setIsDownloading(false);
+                                }
+                            }}
+                            disabled={isDownloading}
+                            className="bg-slate-900 hover:bg-black text-white px-6 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+                        >
+                            {isDownloading ? (
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                                <Download className="w-5 h-5 text-emerald-400" />
+                            )}
+                            Download Official Certificate
+                        </button>
                     </div>
                 </div>
 
             </div>
+
+            {/* Hidden Print View for PDF generation */}
+            <CertificatePrintView invite={invite} />
 
             <div className="mt-8 text-center">
                 <Link to="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors group">

@@ -6,7 +6,8 @@ import { deriveStatus } from '../../lib/logic/auditEngine';
 import { StatusBadge } from './StatusBadge';
 import { CertificatePrintView } from '../buyer/CertificatePrintView';
 import { generatePDFFromElement } from '../../lib/utils/pdfGenerator';
-import { Copy, MessageSquare, Mail, Download, Shield, Plus, Eye, ShieldCheck, XCircle, Clock, Send } from 'lucide-react';
+import { Copy, MessageSquare, Mail, Download, Shield, Plus, Eye, ShieldCheck, XCircle, Clock, Send, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const getEventStyles = (type: string) => {
     switch (type) {
@@ -71,7 +72,12 @@ export const InviteDetail: React.FC = () => {
     };
 
     return (
-        <div className="p-6 max-w-7xl mx-auto">
+        <div className="p-6 max-w-7xl mx-auto space-y-6">
+            <Link to="/app" className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors group">
+                <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                Back to Dashboard
+            </Link>
+
             {status === 'signed' && (
                 <div id="print-certificate" className="absolute -z-50 opacity-0">
                     <CertificatePrintView invite={invite} />
@@ -151,6 +157,22 @@ export const InviteDetail: React.FC = () => {
                                         <p className="text-xs font-medium text-slate-500">
                                             {new Date(event.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                         </p>
+                                        {event.metadata && (
+                                            <div className="mt-2 bg-slate-50 p-2 rounded-lg border border-slate-100 font-mono text-[9px] text-slate-400 break-all leading-tight">
+                                                {event.metadata.userAgent && (
+                                                    <div className="flex gap-1">
+                                                        <span className="shrink-0 text-slate-300 font-black">UA:</span>
+                                                        <span>{event.metadata.userAgent}</span>
+                                                    </div>
+                                                )}
+                                                {event.metadata.platform && (
+                                                    <div className="flex gap-1 mt-0.5">
+                                                        <span className="shrink-0 text-slate-300 font-black">PLAT:</span>
+                                                        <span>{event.metadata.platform}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             );

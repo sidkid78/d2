@@ -46,7 +46,10 @@ export class MockBuyerEnsureService {
         if (invite) {
             // Record 'viewed' event if not already signed/revoked
             if (!invite.auditEvents.some(e => e.type === AuditEventType.INVITE_VIEWED)) {
-                await this.addEvent(invite.id, AuditEventType.INVITE_VIEWED);
+                await this.addEvent(invite.id, AuditEventType.INVITE_VIEWED, {
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform
+                });
             }
         }
 
@@ -64,7 +67,11 @@ export class MockBuyerEnsureService {
         invites[index].certificateId = certId;
         invites[index].auditEvents.push({
             type: AuditEventType.AGREEMENT_SIGNED,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            metadata: {
+                userAgent: signature.userAgent,
+                typedName: signature.typedName
+            }
         });
 
         await this._saveAll(invites);

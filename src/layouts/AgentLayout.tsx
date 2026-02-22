@@ -17,14 +17,22 @@ export const AgentLayout = () => {
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col">
             <header className="bg-white border-b border-slate-200 px-4 py-3 flex justify-between items-center sticky top-0 z-10">
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white font-bold">D</div>
-                    <span className="font-bold text-slate-900 tracking-tight">Dwellingly</span>
+                <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white font-bold shadow-sm shadow-brand-500/20">D</div>
+                        <span className="font-bold text-slate-900 tracking-tight">Dwellingly</span>
+                    </div>
+
+                    <nav className="hidden sm:flex items-center gap-4 border-l border-slate-100 pl-6 h-6">
+                        <Link to="/app" className={`text-sm font-bold transition-colors ${isActive('/app') ? 'text-brand-600' : 'text-slate-500 hover:text-slate-900'}`}>Dashboard</Link>
+                        <Link to="/app/invites" className={`text-sm font-bold transition-colors ${isActive('/app/invites') ? 'text-brand-600' : 'text-slate-500 hover:text-slate-900'}`}>Invites List</Link>
+                    </nav>
+
                     <a
                         href="/dwellingly.html"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="ml-4 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-brand-600 transition-colors hidden md:inline-block border border-slate-200 px-2 py-0.5 rounded"
+                        className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-brand-600 transition-colors hidden lg:inline-block border border-slate-200 px-2 py-0.5 rounded"
                     >
                         Marketing Site
                     </a>
@@ -51,6 +59,6 @@ export const AgentLayout = () => {
                     <span className="text-[10px] font-semibold">Invites</span>
                 </Link>
             </nav>
-        </div>
+        </div >
     );
 };

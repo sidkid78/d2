@@ -12,9 +12,7 @@ import { DashboardPage } from './pages/DashboardPage.tsx';
 import { InviteDetail } from './components/invites/InviteDetail.tsx';
 import { SignPage } from './pages/SignPage.tsx';
 import { VerifyPage } from './pages/VerifyPage.tsx';
-
-// Placeholder for Invites List Tab (Could just reuse Dashboard for MVP)
-const Invites = () => <Navigate to="/app" replace />;
+import { InvitesPage } from './pages/InvitesPage.tsx';
 
 export default function App() {
   return (
@@ -31,7 +29,7 @@ export default function App() {
             <Route element={<ProtectedRoute />}>
               <Route element={<AgentLayout />}>
                 <Route path="/app" element={<DashboardPage />} />
-                <Route path="/app/invites" element={<Invites />} />
+                <Route path="/app/invites" element={<InvitesPage />} />
                 <Route path="/app/invites/:inviteId" element={<InviteDetail />} />
               </Route>
             </Route>
