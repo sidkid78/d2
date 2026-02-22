@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Dwellingly Manifesto</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+    :root {
+      --c-teal: #308976;
+      --c-teal-muted: #4D726B;
+      --c-black: #000000;
+      --c-grey: #9B9C9C;
+      --c-dark: #0A0A0A;
+      --font-hero: 'Playfair Display', serif;
+      --font-body: 'Inter', sans-serif;
+      --font-tech: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      cursor: none;
+    }
+
+    body {
+      background-color: var(--c-dark);
+      color: #fff;
+      font-family: var(--font-body);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* Start Overlay */
+    #start-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 1s ease-out, visibility 1s;
+    }
+
+    #start-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .start-btn {
+      background: transparent;
+      border: 1px solid var(--c-teal);
+      color: var(--c-teal);
+      padding: 1.5rem 3rem;
+      font-family: var(--font-tech);
+      font-size: 1rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    .start-btn:hover {
+      background: var(--c-teal);
+      color: #000;
+      transform: scale(1.05);
+    }
+
+    /* Custom Cursor */
+    #cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 20px;
+      height: 20px;
+      border: 1px solid var(--c-teal);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      transition: width 0.3s, height 0.3s, background-color 0.3s;
+      mix-blend-mode: difference;
+    }
+
+    #cursor.active {
+      width: 80px;
+      height: 80px;
+      background-color: rgba(48, 137, 118, 0.2);
+      border-color: transparent;
+      -webkit-backdrop-filter: blur(2px);
+      backdrop-filter: blur(2px);
+    }
+
+    /* Carousel Container */
+    .carousel {
+      display: flex;
+      overflow-x: scroll;
+      scroll-snap-type: x mandatory;
+      height: 100vh;
+      width: 100vw;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+    }
+
+    .carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Panels */
+    .panel {
+      flex: 0 0 100vw;
+      height: 100vh;
+      scroll-snap-align: start;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 4rem;
+    }
+
+    /* Background Videos */
+    .bg-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.6;
+      z-index: 0;
+      filter: grayscale(80%) contrast(120%) brightness(0.4);
+      transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .panel.in-view .bg-video {
+      transform: scale(1.05);
+    }
+
+    /* Typography System */
+    .content {
+      position: relative;
+      z-index: 2;
+      max-width: 1200px;
+      margin: 0 auto;
+      mix-blend-mode: screen;
+    }
+
+    h1,
+    h2 {
+      font-family: var(--font-hero);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 2rem;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    h1 {
+      font-size: clamp(3rem, 6vw, 6rem);
+      letter-spacing: -0.02em;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 4vw, 4rem);
+      color: var(--c-teal);
+    }
+
+    p {
+      font-size: clamp(1rem, 1.2vw, 1.4rem);
+      line-height: 1.6;
+      color: #e0e0e0;
+      max-width: 60ch;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+    }
+
+    .label {
+      font-family: var(--font-tech);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--c-teal);
+      margin-bottom: 1rem;
+      display: block;
+      opacity: 0;
+      transition: opacity 1.5s 0.1s;
+    }
+
+    strong {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* Specific Layouts */
+
+    /* Panel 1: Hero */
+    #p1 .content {
+      text-align: left;
+    }
+
+    /* Panel 2: Chaos - Brutalist Stack */
+    #p2 .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: end;
+    }
+
+    #p2 h2 {
+      grid-column: 1 / -1;
+      font-size: clamp(4rem, 8vw, 9rem);
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
+      filter: url(#distortion);
+    }
+
+    #p2 .text-block {
+      background: rgba(10, 10, 10, 0.8);
+      padding: 2rem;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      border-left: 2px solid var(--c-teal-muted);
+    }
+
+    /* Panel 3: Shield - Center Focus */
+    #p3 .content {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #p3 h2 {
+      background: linear-gradient(90deg, #fff, var(--c-teal));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Panel 4: Features - Grid */
+    #p4 .grid-features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 3rem;
+      margin-top: 3rem;
+    }
+
+    .feature-item {
+      border-top: 1px solid var(--c-grey);
+      padding-top: 1rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s ease 0.4s;
+    }
+
+    .feature-item h3 {
+      font-family: var(--font-hero);
+      font-size: 1.5rem;
+      color: var(--c-teal);
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-item:nth-child(2) {
+      transition-delay: 0.6s;
+    }
+
+    .feature-item:nth-child(3) {
+      transition-delay: 0.8s;
+    }
+
+    /* Panel 5: Mission - Big Type */
+    #p5 .content {
+      max-width: 900px;
+    }
+
+    #p5 .cta {
+      font-family: var(--font-tech);
+      font-size: 1.5rem;
+      color: var(--c-teal);
+      margin-top: 2rem;
+      border: 1px solid var(--c-teal);
+      padding: 1rem 2rem;
+      display: inline-block;
+      text-transform: uppercase;
+      opacity: 0;
+      transition: all 0.5s 1s;
+    }
+
+    #p5 .cta:hover {
+      background: var(--c-teal);
+      color: #000;
+    }
+
+    /* Animation Trigger Classes */
+    .panel.in-view h1,
+    .panel.in-view h2,
+    .panel.in-view p,
+    .panel.in-view .label,
+    .panel.in-view .feature-item,
+    .panel.in-view .cta {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* SVG Filters */
+    .svg-filters {
+      position: absolute;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
+
+    /* Navigation Dots */
+    .nav {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 1rem;
+      z-index: 10;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--c-grey);
+      border-radius: 50%;
+      transition: all 0.3s;
+    }
+
+    .dot.active {
+      background: var(--c-teal);
+      transform: scale(1.5);
+    }
+
+    /* Glitch/Noise Overlay */
+    .noise-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.05;
+      filter: url(#noise);
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      .panel {
+        padding: 2rem;
+      }
+
+      #p2 .content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="start-overlay">
+    <button class="start-btn" id="start-btn">Enter Manifesto</button>
+  </div>
+
+  <div class="svg-filters">
+    <svg>
+      <filter id="distortion">
+        <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" result="warp" />
+        <feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="30" in="SourceGraphic" in2="warp" />
+      </filter>
+      <filter id="noise">
+        <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch" />
+      </filter>
+    </svg>
+  </div>
+
+  <div id="cursor"></div>
+  <div class="noise-overlay"></div>
+
+  <div class="carousel" id="carousel">
+
+    <!-- PANEL 1: THE DEATH -->
+    <section class="panel" id="p1">
+      <video src="./images/scene-1.mp4" class="bg-video" loop playsinline></video>
+      <audio src="./audio/narration-1 (1).wav" class="narration"></audio>
+      <div class="content">
+        <span class="label">01 — The Manifesto</span>
+        <h1>The Death of<br>"The Handshake"</h1>
+        <p>For decades, real estate agents operated on a silent promise. You did the work, you showed the houses, you
+          navigated the nightmares—and you knew, at the end of the road, there was a paycheck. The NAR settlement didn't
+          just change a rule; it killed that promise.</p>
+        <p>It turned a professional vocation into a high-stakes gamble. Today, every time an agent starts their car to
+          meet a new buyer, they are haunted by a single, agonizing question: <br><br><em>“Am I working for free?”</em>
+        </p>
+      </div>
+    </section>
+
+    <!-- PANEL 2: THE CHAOS -->
+    <section class="panel" id="p2">
+      <video src="./images/scene-2.mp4" class="bg-video" loop playsinline></video>
+      <audio src="./audio/narration-2 (1).wav" class="narration"></audio>
+      <div class="content">
+        <span class="label"></span>
+        <h2>POLITE CHAOS</h2>
+        <div class="text-block">
+          <p><strong>The Chaos of the Unprotected Agent</strong></p>
+          <p>The industry is currently in a state of "polite chaos." Agents are being told to "prove their value" while
+            their compensation has been stripped from the MLS and hidden behind a veil of awkward negotiations.</p>
+        </div>
+        <div class="text-block" style="transition-delay: 0.2s">
+          <p>This isn't just a "structural gap"—it is an attack on the livelihood of 1.5 million professionals. When the
+            rules of the game are erased, the person who works the hardest is usually the one who gets hurt the most.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 3: THE SHIELD -->
+    <section class="panel" id="p3">
+      <video src="./images/scene-3.mp4" class="bg-video" loop playsinline></video>
+      <audio src="./audio/narration-3 (1).wav" class="narration"></audio>
+      <div class="content">
+        <span class="label"></span>
+        <h1>Dwellingly: Your Shield.<br>Your Proof. Your Peace of Mind.</h1>
+        <p>We didn’t build Dwellingly to be another "tool" in your tech stack. We built it to be your <strong>defensive
+            perimeter.</strong></p>
+        <p>We believe that no professional should ever have to "wing it" when it comes to their mortgage payment. We
+          believe that transparency isn't a burden—it’s a superpower.</p>
+        <p style="color: var(--c-teal); font-family: var(--font-hero); font-style: italic; font-size: 1.5rem;">
+          Dwellingly is the Commission Infrastructure™ that replaces the broken promises of the past with the digital
+          certainty of the future.</p>
+      </div>
+    </section>
+
+    <!-- PANEL 4: FEATURES -->
+    <section class="panel" id="p4">
+      <video src="./images/scene-4.mp4" class="bg-video" loop playsinline></video>
+      <audio src="./audio/narration-4 (1).wav" class="narration"></audio>
+      <div class="content">
+        <span class="label"></span>
+        <div class="grid-features">
+          <div class="feature-item">
+            <h3>From Awkward to Authoritative</h3>
+            <p>Our 30-second mobile onboarding turns a cringeworthy "talk about fees" into a professional standard of
+              excellence.</p>
+          </div>
+          <div class="feature-item">
+            <h3>The Commission Certificate</h3>
+            <p>This is more than a PDF. It is a digital serial number for your worth. It tells the world—and the title
+              company—exactly what your expertise is worth before you ever unlock a front door.</p>
+          </div>
+          <div class="feature-item">
+            <h3>A New Standard of Respect</h3>
+            <p>When you send a Dwellingly link, you aren't just "signing a form." You are signaling to your client that
+              you are a high-level professional who operates with total transparency.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 5: MISSION -->
+    <section class="panel" id="p5">
+      <video src="./images/scene-5.mp4" class="bg-video" loop playsinline></video>
+      <audio src="./audio/narration-5 (1).wav" class="narration"></audio>
+      <div class="content">
+        <span class="label"></span>
+        <h1>No Agent Left Unprotected</h1>
+        <p>The "old way" is gone. The era of implicit trust is over. Now, we enter the era of <strong>Verified
+            Professionalism.</strong></p>
+        <p>Dwellingly exists for the agent who is tired of the uncertainty. For the broker who refuses to let their team
+          work without a net. For the industry that deserves a foundation of clarity.</p>
+        <p>For $29 a month—less than the cost of a single tank of gas—we protect the $9,000 commissions you earn through
+          your sweat and expertise.</p>
+        <div style="margin-top: 3rem;">
+          <p><strong>Stop gambling with your labor. Get protected.</strong></p>
+          <div class="cta">Get Dwellingly</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="nav">
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+
+  <script>
+    const carousel = document.getElementById('carousel');
+    const startOverlay = document.getElementById('start-overlay');
+    const startBtn = document.getElementById('start-btn');
+    const panels = document.querySelectorAll('.panel');
+    const dots = document.querySelectorAll('.dot');
+    const cursor = document.getElementById('cursor');
+
+    let isStarted = false;
+
+    // Start Experience
+    startBtn.addEventListener('click', () => {
+      isStarted = true;
+      startOverlay.classList.add('hidden');
+
+      // Initialize first scene manually because IntersectionObserver might not trigger correctly on load
+      const firstPanel = panels[0];
+      playScene(firstPanel);
+    });
+
+    function playScene(panel) {
+      if (!isStarted) return;
+
+      // Reset all media
+      document.querySelectorAll('video').forEach(v => {
+        v.pause();
+        v.currentTime = 0;
+      });
+      document.querySelectorAll('audio').forEach(a => {
+        a.pause();
+        a.currentTime = 0;
+      });
+
+      const video = panel.querySelector('video');
+      const audio = panel.querySelector('audio');
+
+      if (video) {
+        video.volume = 0.3; // Subtle background noise
+
+        // Dynamic speed sync: Adjust video playback speed to match audio duration
+        // We use loadedmetadata to ensure we have the durations
+        const syncSpeed = () => {
+          if (audio.duration && video.duration) {
+            // Speed = Video Duration / Audio Duration
+            // Note: Most browsers support playbackRate between 0.06 and 16
+            const rate = video.duration / audio.duration;
+            video.playbackRate = Math.max(0.1, Math.min(rate, 1.0)); // Don't speed up, only slow down minimum 0.1
+          }
+        };
+
+        if (audio.readyState >= 1 && video.readyState >= 1) {
+          syncSpeed();
+        } else {
+          audio.addEventListener('loadedmetadata', syncSpeed, { once: true });
+          video.addEventListener('loadedmetadata', syncSpeed, { once: true });
+        }
+
+        video.play().catch(e => console.log("Video play blocked", e));
+      }
+      if (audio) {
+        audio.play().catch(e => console.log("Audio play blocked", e));
+
+        // Auto-scroll on end
+        audio.onended = () => {
+          const index = Array.from(panels).indexOf(panel);
+          const nextPanel = panels[index + 1];
+          if (nextPanel) {
+            nextPanel.scrollIntoView({ behavior: 'smooth' });
+          }
+        };
+      }
+    }
+
+    // Custom Cursor Logic
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+
+    const hoverTargets = document.querySelectorAll('h1, h2, strong, .cta, .feature-item, .start-btn');
+    hoverTargets.forEach(target => {
+      target.addEventListener('mouseenter', () => cursor.classList.add('active'));
+      target.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+    });
+
+    // Intersection Observer for Media & Nav Dots
+    const observerOptions = {
+      threshold: 0.6
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+
+          if (isStarted) {
+            playScene(entry.target);
+          }
+
+          // Update dots
+          const index = Array.from(panels).indexOf(entry.target);
+          dots.forEach(d => d.classList.remove('active'));
+          if (dots[index]) dots[index].classList.add('active');
+        } else {
+          entry.target.classList.remove('in-view');
+        }
+      });
+    }, observerOptions);
+
+    panels.forEach(panel => {
+      observer.observe(panel);
+    });
+
+    // Handle manual scroll interruptions
+    carousel.addEventListener('scroll', () => {
+      // Logic could go here to sync dots if needed, but IntersectionObserver handles it well
+    });
+  </script>
+</body>
+
+</html>
