@@ -1,73 +1,45 @@
-# React + TypeScript + Vite
+# Dwellingly: Commission Protection Infrastructure
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Dwellingly is a modern real estate platform designed to streamline and protect professional relationships through transparency, AI-powered insights, and secure verification.
 
-Currently, two official plugins are available:
+## ✨ Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Liquid Glass Aesthetic**: A premium, high-fidelity user interface built with the latest Tailwind CSS v4, featuring glassmorphism and smooth micro-animations.
+- **AI-Powered Facilitation**: Real-time agreement summarization using **Gemini 3 Flash**, translating complex legal terms into plain, accessible language.
+- **Secure Digital Signatures**: Integrated signature capture system to finalize buyer representation agreements with ease.
+- **Public Verification Protocol**: Every signed agreement generates a unique Commission Protection Certificate with a dynamic QR code for instant, public validation.
+- **Audit-Ready Lifecycle**: End-to-end event logging (Audit Engine) tracking invitations from creation to signature.
 
-## React Compiler
+## 🛠️ Technical Architecture
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Core**: [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) + [Vite](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) + [DaisyUI](https://daisyui.com/)
+- **AI Integration**: [Google GenAI SDK (@google/genai)](https://ai.google.dev/gemini-api/docs)
+- **Document & Verification**:
+  - `html2canvas` & `jspdf` for certificate generation.
+  - `react-qr-code` for public verification links.
+  - `react-signature-canvas` for secure digital inputs.
 
-## Expanding the ESLint configuration
+## 🚀 Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. **Install Dependencies**:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+   ```bash
+   npm install
+   ```
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+2. **Environment Setup**:
+   Create a `.env` file with your Gemini API Key:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+   ```env
+   VITE_GEMINI_API_KEY=your_key_here
+   ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+3. **Run Development Server**:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+   ```bash
+   npm run dev
+   ```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+*© 2026 Dwellingly. Built for the future of real estate.*
