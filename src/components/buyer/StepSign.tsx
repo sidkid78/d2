@@ -8,6 +8,47 @@ interface Props {
     isLoading?: boolean;
 }
 
+const trimCanvas = (canvas: HTMLCanvasElement): HTMLCanvasElement => {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return canvas;
+
+    const width = canvas.width;
+    const height = canvas.height;
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const data = imageData.data;
+
+    let top = height, bottom = 0, left = width, right = 0;
+    let found = false;
+
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const alpha = data[(y * width + x) * 4 + 3];
+            if (alpha > 0) {
+                if (y < top) top = y;
+                if (y > bottom) bottom = y;
+                if (x < left) left = x;
+                if (x > right) right = x;
+                found = true;
+            }
+        }
+    }
+
+    if (!found) return canvas;
+
+    const trimWidth = right - left + 1;
+    const trimHeight = bottom - top + 1;
+    const trimmedCanvas = document.createElement('canvas');
+    trimmedCanvas.width = trimWidth;
+    trimmedCanvas.height = trimHeight;
+
+    const trimmedCtx = trimmedCanvas.getContext('2d');
+    if (!trimmedCtx) return canvas;
+
+    trimmedCtx.drawImage(canvas, left, top, trimWidth, trimHeight, 0, 0, trimWidth, trimHeight);
+
+    return trimmedCanvas;
+};
+
 const StepSign: React.FC<Props> = ({ onSign, buyerName, isLoading = false }) => {
     const sigCanvas = useRef<SignatureCanvas>(null);
     const [typedName, setTypedName] = useState(buyerName);
@@ -51,11 +92,12 @@ const StepSign: React.FC<Props> = ({ onSign, buyerName, isLoading = false }) => 
 
         try {
             // Get the base64 image of the signature
-            const canvas = sigCanvas.current?.getTrimmedCanvas();
-            if (!canvas) {
+            const rawCanvas = sigCanvas.current?.getCanvas();
+            if (!rawCanvas) {
                 setError('Failed to capture signature canvas. Please try again.');
                 return;
             }
+            const canvas = trimCanvas(rawCanvas);
             const signatureImageDataUrl = canvas.toDataURL('image/png');
 
             onSign({

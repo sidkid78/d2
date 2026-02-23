@@ -402,7 +402,7 @@
 
     <!-- PANEL 1: THE DEATH -->
     <section class="panel" id="p1">
-      <video src="./images/scene-1.mp4" class="bg-video" loop playsinline></video>
+      <video src="./images/scene-1.mp4" class="bg-video" loop></video>
       <audio src="./audio/narration-1 (1).wav" class="narration"></audio>
       <div class="content">
         <span class="label">01 — The Manifesto</span>
@@ -418,7 +418,7 @@
 
     <!-- PANEL 2: THE CHAOS -->
     <section class="panel" id="p2">
-      <video src="./images/scene-2.mp4" class="bg-video" loop playsinline></video>
+      <video src="./images/scene-2.mp4" class="bg-video" loop></video>
       <audio src="./audio/narration-2 (1).wav" class="narration"></audio>
       <div class="content">
         <span class="label"></span>
@@ -438,7 +438,7 @@
 
     <!-- PANEL 3: THE SHIELD -->
     <section class="panel" id="p3">
-      <video src="./images/scene-3.mp4" class="bg-video" loop playsinline></video>
+      <video src="./images/scene-3.mp4" class="bg-video" loop></video>
       <audio src="./audio/narration-3 (1).wav" class="narration"></audio>
       <div class="content">
         <span class="label"></span>
@@ -455,7 +455,7 @@
 
     <!-- PANEL 4: FEATURES -->
     <section class="panel" id="p4">
-      <video src="./images/scene-4.mp4" class="bg-video" loop playsinline></video>
+      <video src="./images/scene-4.mp4" class="bg-video" loop></video>
       <audio src="./audio/narration-4 (1).wav" class="narration"></audio>
       <div class="content">
         <span class="label"></span>
@@ -481,7 +481,7 @@
 
     <!-- PANEL 5: MISSION -->
     <section class="panel" id="p5">
-      <video src="./images/scene-5.mp4" class="bg-video" loop playsinline></video>
+      <video src="./images/scene-5.mp4" class="bg-video" loop></video>
       <audio src="./audio/narration-5 (1).wav" class="narration"></audio>
       <div class="content">
         <span class="label"></span>
@@ -534,6 +534,7 @@
 
       // Reset all media
       document.querySelectorAll('video').forEach(v => {
+        v.playsInline = true; // Fix for Firefox linter: move from HTML attribute to JS property
         v.pause();
         v.currentTime = 0;
       });
