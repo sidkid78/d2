@@ -14,6 +14,8 @@ export const VerifyPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [isDownloading, setIsDownloading] = useState(false);
 
+    const [hasAutoDownloaded, setHasAutoDownloaded] = useState(false);
+
     useEffect(() => {
         const fetchCert = async () => {
             if (certificateId) {
@@ -24,6 +26,26 @@ export const VerifyPage: React.FC = () => {
         };
         fetchCert();
     }, [certificateId]);
+
+    // Automatic download trigger
+    useEffect(() => {
+        if (!loading && invite && !hasAutoDownloaded && !isDownloading) {
+            const triggerDownload = async () => {
+                setHasAutoDownloaded(true);
+                setIsDownloading(true);
+                try {
+                    // Small delay to ensure the hidden print view is fully rendered
+                    await new Promise(resolve => setTimeout(resolve, 800));
+                    await generatePDFFromElement('print-certificate', `Dwellingly_Cert_${invite.certificateId}.pdf`);
+                } catch (err) {
+                    console.error('Auto-download failed:', err);
+                } finally {
+                    setIsDownloading(false);
+                }
+            };
+            triggerDownload();
+        }
+    }, [loading, invite, hasAutoDownloaded, isDownloading]);
 
     if (loading) {
         return (
