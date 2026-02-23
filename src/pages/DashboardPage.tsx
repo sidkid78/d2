@@ -142,8 +142,8 @@ export const DashboardPage: React.FC = () => {
                             </button>
                         </form>
                     </div>
-                    <div className="hidden md:block w-1/3 bg-white/5 border-l border-glass-border p-6 flex flex-col justify-center items-center text-center relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-50"></div>
+                    <div className="hidden md:flex w-1/3 bg-white/5 border-l border-glass-border p-6 flex-col justify-center items-center text-center relative overflow-hidden">
+                        <div className="absolute inset-0 bg-linear-to-br from-primary/10 to-transparent opacity-50"></div>
                         <div className="w-16 h-16 rounded-full bg-black/40 border border-primary/30 shadow-[0_0_15px_rgba(48,137,118,0.15)] flex items-center justify-center mb-3 text-primary relative z-10">
                             <span className="material-symbols-outlined text-3xl">verified_user</span>
                         </div>
@@ -171,7 +171,7 @@ export const DashboardPage: React.FC = () => {
                                 <span>{kpis.conversionRate.toFixed(0)}% Conversion</span>
                             </div>
                         </div>
-                        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-primary to-secondary-brand opacity-70"></div>
+                        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-linear-to-r from-primary to-secondary-brand opacity-70"></div>
                     </div>
                     <div className="flex-1 glass-panel rounded-xl p-5 relative group">
                         <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -191,7 +191,7 @@ export const DashboardPage: React.FC = () => {
                                 <span>Based on recent activity</span>
                             </div>
                         </div>
-                        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-gray-700 to-gray-500 opacity-50"></div>
+                        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-linear-to-r from-gray-700 to-gray-500 opacity-50"></div>
                     </div>
                 </div>
             </div>

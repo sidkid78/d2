@@ -1,12 +1,14 @@
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
+import { NotificationCenter } from '../components/agent/NotificationCenter';
 
 export const AgentLayout = () => {
     const { logout, user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
     const handleLogout = () => {
         logout();
@@ -17,9 +19,9 @@ export const AgentLayout = () => {
 
     const navItems = [
         { name: 'Command Center', path: '/app/dashboard', icon: 'dashboard' },
+        { name: 'Activity Center', path: '/app/activity', icon: 'notifications_active' },
         { name: 'Agreements', path: '/app/invites', icon: 'description' },
         { name: 'Contacts', path: '#', icon: 'group' },
-        { name: 'Commissions', path: '#', icon: 'payments' },
     ];
 
     return (
@@ -42,8 +44,8 @@ export const AgentLayout = () => {
                                 key={item.name}
                                 to={item.path}
                                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${isActive(item.path)
-                                        ? 'bg-primary/10 border border-primary/20 text-primary shadow-[0_0_10px_rgba(48,137,118,0.1)] font-semibold'
-                                        : 'text-text-muted hover:text-white hover:bg-white/5 font-medium'
+                                    ? 'bg-primary/10 border border-primary/20 text-primary shadow-[0_0_10px_rgba(48,137,118,0.1)] font-semibold'
+                                    : 'text-text-muted hover:text-white hover:bg-white/5 font-medium'
                                     }`}
                             >
                                 <span className="material-symbols-outlined">{item.icon}</span>
@@ -84,12 +86,21 @@ export const AgentLayout = () => {
                         <span className="material-symbols-outlined text-primary">home_work</span>
                         <h1 className="font-bold text-lg text-white">Dwellingly</h1>
                     </div>
-                    <button
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="text-text-muted hover:text-white"
-                    >
-                        <span className="material-symbols-outlined">{isMobileMenuOpen ? 'close' : 'menu'}</span>
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => setIsNotificationsOpen(true)}
+                            className="p-2 rounded-full hover:bg-white/5 text-text-muted relative transition-colors"
+                        >
+                            <span className="material-symbols-outlined">notifications</span>
+                            <span className="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-background-dark shadow-[0_0_8px_rgba(239,68,68,0.5)]"></span>
+                        </button>
+                        <button
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            className="text-text-muted hover:text-white"
+                        >
+                            <span className="material-symbols-outlined">{isMobileMenuOpen ? 'close' : 'menu'}</span>
+                        </button>
+                    </div>
                 </header>
 
                 {/* Mobile Menu Overlay */}
@@ -103,8 +114,8 @@ export const AgentLayout = () => {
                                         to={item.path}
                                         onClick={() => setIsMobileMenuOpen(false)}
                                         className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${isActive(item.path)
-                                                ? 'bg-primary/10 border border-primary/20 text-primary'
-                                                : 'text-text-muted hover:text-white'
+                                            ? 'bg-primary/10 border border-primary/20 text-primary'
+                                            : 'text-text-muted hover:text-white'
                                             }`}
                                     >
                                         <span className="material-symbols-outlined">{item.icon}</span>
@@ -124,9 +135,25 @@ export const AgentLayout = () => {
                 )}
 
                 {/* Page Content */}
-                <div className="relative z-10 w-full h-full">
+                <div className="relative z-10 w-full h-full pt-16 md:pt-0">
+                    {/* Desktop Notification Toggle (Hidden on mobile header) */}
+                    <div className="absolute top-6 right-8 z-30 hidden md:block">
+                        <button
+                            onClick={() => setIsNotificationsOpen(true)}
+                            className="p-2.5 rounded-full bg-black/40 border border-glass-border shadow-lg text-text-muted hover:text-white hover:border-primary/50 transition-all backdrop-blur-md relative group"
+                        >
+                            <span className="material-symbols-outlined">notifications</span>
+                            <span className="absolute top-2 right-2 size-2 bg-red-500 rounded-full border border-background-dark shadow-[0_0_8px_rgba(239,68,68,0.5)] group-hover:scale-110 transition-transform"></span>
+                        </button>
+                    </div>
                     <Outlet />
                 </div>
+
+                {/* Overlays */}
+                <NotificationCenter
+                    isOpen={isNotificationsOpen}
+                    onClose={() => setIsNotificationsOpen(false)}
+                />
             </main>
         </div>
     );

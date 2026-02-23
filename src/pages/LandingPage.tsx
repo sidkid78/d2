@@ -313,7 +313,7 @@ const LandingPage: React.FC = () => {
                                     Talk to Sales
                                 </button>
                             </div>
-                            <p className="text-white/60 text-sm mt-4 font-sans">Limited spots available for Q3 2024</p>
+                            <p className="text-white/60 text-sm mt-4 font-sans">Limited spots available for Q3 2026</p>
                         </div>
                     </div>
                 </section>

@@ -1,4 +1,4 @@
-import { type BuyerInvite, AuditEventType, type SignatureData } from '../types/domain';
+import { type BuyerInvite, AuditEventType, type SignatureData, type Notification, type Activity } from '../types/domain';
 import { hashToken, generateCertificateId } from '../lib/utils/crypto';
 
 const STORAGE_KEY = 'dwellingly_invites_v1';
@@ -95,6 +95,104 @@ export class MockBuyerEnsureService {
     async verifyCertificate(certificateId: string): Promise<BuyerInvite | null> {
         const invites = await this._getAll();
         return invites.find(i => i.certificateId === certificateId) || null;
+    }
+
+    async listNotifications(): Promise<Notification[]> {
+        const invites = await this._getAll();
+        const notifications: Notification[] = [];
+
+        // Derived: Signature Overdue (created > 48h ago and not signed)
+        invites.forEach(invite => {
+            const createdDate = new Date(invite.createdAtUtc);
+            const now = new Date();
+            const diffHours = (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60);
+
+            if (diffHours > 48 && !invite.signatureData) {
+                notifications.push({
+                    id: `notif_overdue_${invite.id}`,
+                    category: 'action',
+                    priority: 'high',
+                    title: 'Signature Overdue',
+                    message: `${invite.buyerName} hasn't signed the agreement sent 48 hours ago.`,
+                    timestamp: invite.createdAtUtc,
+                    read: false,
+                    inviteId: invite.id
+                });
+            }
+
+            // Derived: Signed (last 24h)
+            if (invite.signatureData) {
+                const signedDate = new Date(invite.signatureData.signedAtUtc);
+                if ((now.getTime() - signedDate.getTime()) / (1000 * 60 * 60) < 24) {
+                    notifications.push({
+                        id: `notif_signed_${invite.id}`,
+                        category: 'protected',
+                        priority: 'medium',
+                        title: 'Commission Secured',
+                        message: `${invite.buyerName} signed. Dwellingly Certificate #${invite.certificateId} is now active.`,
+                        timestamp: invite.signatureData.signedAtUtc,
+                        read: false,
+                        inviteId: invite.id
+                    });
+                }
+            }
+        });
+
+        // Static system update
+        notifications.push({
+            id: 'notif_sys_compliance',
+            category: 'system',
+            priority: 'low',
+            title: 'Compliance Update',
+            message: 'New NAR settlement disclosure requirements added for 2024. Please review updated templates.',
+            timestamp: new Date(Date.now() - 86400000).toISOString(),
+            read: true
+        });
+
+        return notifications.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    }
+
+    async listActivities(): Promise<Activity[]> {
+        const invites = await this._getAll();
+        const activities: Activity[] = [];
+
+        invites.forEach(invite => {
+            invite.auditEvents.forEach(event => {
+                let type: any = null;
+                let title = '';
+                let description = '';
+                let statusTag = '';
+
+                if (event.type === AuditEventType.AGREEMENT_SIGNED) {
+                    type = 'agreement_signed';
+                    title = `Agreement Signed: ${invite.buyerName}`;
+                    description = `Buyer Representation Agreement for property has been digitally signed and verified. Commission is now locked.`;
+                    statusTag = 'Commission Secured';
+                } else if (event.type === AuditEventType.INVITE_VIEWED) {
+                    type = 'terms_reviewed';
+                    title = `Reviewing Terms: ${invite.buyerName}`;
+                    description = `Client is currently viewing the Buyer Agency Disclosure.`;
+                } else if (event.type === AuditEventType.INVITE_CREATED) {
+                    type = 'link_opened';
+                    title = `Invite Created: ${invite.buyerName}`;
+                    description = `Secure agreement link generated and sent to buyer.`;
+                }
+
+                if (type) {
+                    activities.push({
+                        id: `act_${invite.id}_${event.type}`,
+                        type,
+                        title,
+                        description,
+                        timestamp: event.timestamp,
+                        inviteId: invite.id,
+                        statusTag
+                    });
+                }
+            });
+        });
+
+        return activities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
     }
 }
 

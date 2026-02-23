@@ -13,6 +13,7 @@ import { InviteDetail } from './components/invites/InviteDetail.tsx';
 import { SignPage } from './pages/SignPage.tsx';
 import { VerifyPage } from './pages/VerifyPage.tsx';
 import { InvitesPage } from './pages/InvitesPage.tsx';
+import { ActivityCenterPage } from './pages/ActivityCenterPage.tsx';
 import LandingPage from './pages/LandingPage.tsx';
 
 export default function App() {
@@ -30,6 +31,8 @@ export default function App() {
             <Route element={<ProtectedRoute />}>
               <Route element={<AgentLayout />}>
                 <Route path="/app" element={<DashboardPage />} />
+                <Route path="/app/dashboard" element={<DashboardPage />} />
+                <Route path="/app/activity" element={<ActivityCenterPage />} />
                 <Route path="/app/invites" element={<InvitesPage />} />
                 <Route path="/app/invites/:inviteId" element={<InviteDetail />} />
               </Route>

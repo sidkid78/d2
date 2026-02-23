@@ -57,3 +57,29 @@ export interface Certificate {
     brokerageName: string;
     buyerInitials: string;
 }
+
+export type NotificationCategory = 'action' | 'protected' | 'system';
+export type NotificationPriority = 'high' | 'medium' | 'low';
+
+export interface Notification {
+    id: string;
+    category: NotificationCategory;
+    priority: NotificationPriority;
+    title: string;
+    message: string;
+    timestamp: string;
+    read: boolean;
+    inviteId?: string;
+}
+
+export type ActivityType = 'agreement_signed' | 'terms_reviewed' | 'link_opened';
+
+export interface Activity {
+    id: string;
+    type: ActivityType;
+    title: string;
+    description: string;
+    timestamp: string;
+    inviteId?: string;
+    statusTag?: string;
+}
