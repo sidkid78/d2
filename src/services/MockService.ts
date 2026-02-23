@@ -97,6 +97,13 @@ export class MockBuyerEnsureService {
         return invites.find(i => i.certificateId === certificateId) || null;
     }
 
+    async resendInvite(inviteId: string): Promise<void> {
+        await this.addEvent(inviteId, AuditEventType.INVITE_CREATED, {
+            resent: true,
+            resendDate: new Date().toISOString()
+        });
+    }
+
     async listNotifications(): Promise<Notification[]> {
         const invites = await this._getAll();
         const notifications: Notification[] = [];

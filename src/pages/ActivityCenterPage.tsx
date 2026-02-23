@@ -1,56 +1,71 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { mockService } from '../services/MockService';
-import type { Activity } from '../types/domain';
+import type { Activity, BuyerInvite } from '../types/domain';
+import { calculateKPIs } from '../utils/analytics';
 
 export const ActivityCenterPage: React.FC = () => {
     const [activities, setActivities] = useState<Activity[]>([]);
+    const [invites, setInvites] = useState<BuyerInvite[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const fetchActivities = async () => {
+        const fetchData = async () => {
             setIsLoading(true);
             try {
-                const data = await mockService.listActivities();
-                setActivities(data);
+                const [actData, invData] = await Promise.all([
+                    mockService.listActivities(),
+                    mockService.listInvites()
+                ]);
+                setActivities(actData);
+                setInvites(invData);
             } finally {
                 setIsLoading(false);
             }
         };
-        fetchActivities();
+        fetchData();
     }, []);
+
+    const kpis = useMemo(() => calculateKPIs(invites), [invites]);
+
+    const leadHealth = useMemo(() => {
+        if (invites.length === 0) return 0;
+        const total = invites.length;
+        const signed = invites.filter(i => !!i.signatureData).length;
+        return Math.round((signed / total) * 100);
+    }, [invites]);
 
     return (
         <div className="p-6 md:p-10 max-w-5xl mx-auto flex flex-col gap-10 relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Page Header */}
             <div>
-                <h1 className="text-4xl font-bold text-white tracking-tight font-display mb-2">Activity Feed</h1>
+                <h1 className="text-4xl font-bold text-white tracking-tight font-display mb-2">Activity Center</h1>
                 <p className="text-text-muted text-base">Live tracking of your commission pipeline and buyer interactions.</p>
             </div>
 
             {/* Stats Bar */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm group hover:border-primary/30 transition-all duration-300">
-                    <p className="text-text-muted text-[10px] uppercase tracking-[0.2em] font-bold mb-1">Total Protected</p>
-                    <h3 className="text-3xl font-bold text-primary tracking-tight font-display">$142,500</h3>
+                    <p className="text-text-muted text-[10px] uppercase tracking-[0.2em] font-bold mb-1">Signed (7d)</p>
+                    <h3 className="text-3xl font-bold text-primary tracking-tight font-display">{kpis.signedLast7Days}</h3>
                     <div className="flex items-center gap-1 mt-2 text-success-glow text-xs font-bold">
-                        <span className="material-symbols-outlined text-sm">trending_up</span>
-                        <span>+12.4% vs last month</span>
+                        <span className="material-symbols-outlined text-sm">verified_user</span>
+                        <span>{kpis.conversionRate.toFixed(0)}% Conversion</span>
                     </div>
                 </div>
 
                 <div className="p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm group hover:border-white/20 transition-all duration-300">
-                    <p className="text-text-muted text-[10px] uppercase tracking-[0.2em] font-bold mb-1">Active Leads</p>
-                    <h3 className="text-3xl font-bold text-white tracking-tight font-display">18</h3>
-                    <p className="text-text-muted text-xs mt-2 font-medium">6 requiring signature</p>
+                    <p className="text-text-muted text-[10px] uppercase tracking-[0.2em] font-bold mb-1">Active Pipeline</p>
+                    <h3 className="text-3xl font-bold text-white tracking-tight font-display">{invites.filter(i => !i.signatureData).length}</h3>
+                    <p className="text-text-muted text-xs mt-2 font-medium">Requiring signature</p>
                 </div>
 
                 <div className="p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm group hover:border-white/20 transition-all duration-300">
-                    <p className="text-text-muted text-[10px] uppercase tracking-[0.2em] font-bold mb-1">Lead Health</p>
+                    <p className="text-text-muted text-[10px] uppercase tracking-[0.2em] font-bold mb-1">Pipeline Health</p>
                     <div className="flex items-center gap-3 mt-3">
                         <div className="h-2 flex-1 bg-white/10 rounded-full overflow-hidden">
-                            <div className="h-full bg-primary w-[85%] shadow-[0_0_8px_rgba(48,137,118,0.5)]"></div>
+                            <div className="h-full bg-primary shadow-[0_0_8px_rgba(48,137,118,0.5)]" style={{ width: `${leadHealth}%` }}></div>
                         </div>
-                        <span className="text-sm font-bold text-white font-display">85%</span>
+                        <span className="text-sm font-bold text-white font-display">{leadHealth}%</span>
                     </div>
                 </div>
             </div>

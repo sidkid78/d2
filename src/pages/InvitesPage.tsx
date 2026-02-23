@@ -7,34 +7,52 @@ import type { BuyerInvite } from '../types/domain';
 
 export const InvitesPage: React.FC = () => {
     const [invites, setInvites] = useState<BuyerInvite[]>([]);
+    const [resendingId, setResendingId] = useState<string | null>(null);
+
+    const load = async () => {
+        const all = await mockService.listInvites();
+        setInvites(all);
+    };
 
     useEffect(() => {
-        const load = async () => {
-            const all = await mockService.listInvites();
-            setInvites(all);
-        };
         load();
     }, []);
 
+    const handleResend = async (inviteId: string) => {
+        setResendingId(inviteId);
+        try {
+            await mockService.resendInvite(inviteId);
+            await load();
+            setTimeout(() => setResendingId(null), 2000);
+        } catch (error) {
+            console.error('Failed to resend:', error);
+            setResendingId(null);
+        }
+    };
+
     return (
-        <div className="p-6 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">
-            <Link to="/app" className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors group">
-                <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                Back to Dashboard
+        <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-700 relative z-10">
+            <Link to="/app" className="inline-flex items-center gap-2 text-xs font-bold text-text-muted hover:text-white uppercase tracking-widest transition-all group">
+                <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+                Return to Command Center
             </Link>
 
-            <header className="flex justify-between items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
-                    <Users size={100} />
+            <header className="glass-panel p-10 rounded-2xl border border-white/5 shadow-2xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none">
+                    <Users size={160} className="text-primary" />
                 </div>
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-900 tracking-tight">All Protection Links</h1>
-                    <p className="text-slate-500 text-sm font-medium mt-1">Review and manage every representation invite in your account</p>
+                <div className="relative z-10">
+                    <h1 className="text-4xl font-bold text-white tracking-tight font-display mb-2">Protection Links</h1>
+                    <p className="text-text-muted text-base">Review and manage every representation agreement in your account.</p>
                 </div>
             </header>
 
-            <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <InvitesList invites={invites} />
+            <section className="glass-panel rounded-2xl border border-white/5 shadow-2xl overflow-hidden backdrop-blur-xl">
+                <InvitesList
+                    invites={invites}
+                    onResend={handleResend}
+                    resendingId={resendingId}
+                />
             </section>
         </div>
     );

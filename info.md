@@ -402,7 +402,8 @@ export const AgentLayout = () => {
 
 ### Phase 1 Execution Summary
 
-- **Project Scaffolded:** Vite/TS/Tailwind environment is live.
+* **Project Scaffolded:** Vite/TS/Tailwind environment is live.
+
 * **Theme Integrated:** Violet brand colors (`brand-500`, etc.) are mapped.
 * **Routing Logic:** Defined and secured. Unauthorized users are redirected to `/login`.
 * **Mock Auth:** Persistence via `localStorage` is functional.
@@ -1683,13 +1684,15 @@ VITE_PUBLIC_BASE_URL=http://localhost:5173
 
 ## Key Workflows
 
-- **Agent Dashboard**: Accessible at `/app`. Create invites and track status.
+* **Agent Dashboard**: Accessible at `/app`. Create invites and track status.
+
 * **Buyer Signing**: Accessible via `/sign/:token`. Mobile-optimized 3-step flow.
 * **Verification**: Public page at `/verify/:certificateId` for title companies/listing agents.
 
 ## Hardening Notes
 
-- **Tokens**: Only SHA-256 hashes are stored in the mock DB.
+* **Tokens**: Only SHA-256 hashes are stored in the mock DB.
+
 * **Audit Engine**: Status is never stored; it is derived at runtime from the `auditEvents` array to ensure a single source of truth.
 * **PDFs**: Generated client-side. If the browser blocks the download, a fallback "Print View" is provided.
 
