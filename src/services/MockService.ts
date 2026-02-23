@@ -3,6 +3,40 @@ import { hashToken, generateCertificateId } from '../lib/utils/crypto';
 
 const STORAGE_KEY = 'dwellingly_invites_v1';
 
+const STATIC_DEMO_INVITE: BuyerInvite = {
+    id: 'demo_protected_invite',
+    agentId: 'agent_123',
+    buyerName: 'Demo Protected Buyer',
+    buyerContact: 'demo@example.com',
+    tokenHash: 'demo_hash',
+    createdAtUtc: '2024-05-20T10:00:00Z',
+    ttlDays: 365,
+    certificateId: 'DW-DEMO-SAFE',
+    templateSnapshot: {
+        id: 'tmpl_standard_tx',
+        name: 'Standard Residential Representation',
+        jurisdiction: 'TX',
+        version: '1.0.2',
+        summarySections: [
+            { title: 'Exclusive Right to Represent', content: 'Agent has exclusive right to represent Buyer in the purchase of residential property.' },
+            { title: 'Commission Protection', content: 'Agent commission is 2.5% of sales price, typically paid by seller or negotiated at closing.' }
+        ],
+        fullText: 'Full legal text for demo purposes...',
+        compensationDisclosure: 'Clear compensation disclosure as per new standards.'
+    },
+    auditEvents: [
+        { type: AuditEventType.INVITE_CREATED, timestamp: '2024-05-20T10:00:00Z' },
+        { type: AuditEventType.INVITE_VIEWED, timestamp: '2024-05-20T10:05:00Z' },
+        { type: AuditEventType.AGREEMENT_SIGNED, timestamp: '2024-05-20T10:10:00Z' }
+    ],
+    signatureData: {
+        typedName: 'Demo Protected Buyer',
+        consent: true,
+        signedAtUtc: '2024-05-20T10:10:00Z',
+        userAgent: 'Mozilla/5.0 (Vercel Node Proxy)'
+    }
+};
+
 export class MockBuyerEnsureService {
     private async _getAll(): Promise<BuyerInvite[]> {
         const data = localStorage.getItem(STORAGE_KEY);
@@ -93,6 +127,7 @@ export class MockBuyerEnsureService {
     }
 
     async verifyCertificate(certificateId: string): Promise<BuyerInvite | null> {
+        if (certificateId === 'DW-DEMO-SAFE') return STATIC_DEMO_INVITE;
         const invites = await this._getAll();
         return invites.find(i => i.certificateId === certificateId) || null;
     }

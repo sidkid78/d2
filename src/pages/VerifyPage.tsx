@@ -68,7 +68,20 @@ export const VerifyPage: React.FC = () => {
                         <Shield size={32} />
                     </div>
                     <h2 className="text-2xl font-bold text-white mb-2 font-display">Invalid Certificate</h2>
-                    <p className="text-text-muted mb-8 font-medium">This Commission Protection Certificate ID could not be found or is no longer valid.</p>
+                    <p className="text-text-muted mb-6 font-medium">This Commission Protection Certificate ID could not be found or is no longer valid.</p>
+
+                    <div className="bg-white/5 border border-white/10 rounded-2xl p-4 mb-8 text-left">
+                        <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-2 flex items-center gap-2">
+                            <span className="material-symbols-outlined text-sm">info</span>
+                            Cross-Device Demo Tip
+                        </p>
+                        <p className="text-[11px] text-text-muted leading-relaxed">
+                            Since this is a mock app, certificates are stored in your device's <b>local storage</b>. Certificates created on your computer won't be visible to your phone.
+                            <br /><br />
+                            For a reliable cross-device demo, use <b>DW-DEMO-SAFE</b>.
+                        </p>
+                    </div>
+
                     <Link to="/" className="w-full glass-button py-3 font-bold group">
                         Return Home
                         <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
