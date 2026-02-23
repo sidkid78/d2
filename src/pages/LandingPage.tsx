@@ -8,6 +8,13 @@ const LandingPage: React.FC = () => {
 
     const protectedRevenue = dealVolume * homePrice * 0.03;
 
+    const scrollToSection = (id: string) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     return (
         <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-sans min-h-screen flex flex-col overflow-x-hidden selection:bg-primary selection:text-white">
             {/* Ambient Background Glows */}
@@ -24,9 +31,24 @@ const LandingPage: React.FC = () => {
                         <span className="text-xl font-bold tracking-tight text-white font-display">Dwellingly</span>
                     </div>
                     <nav className="hidden md:flex items-center gap-8">
-                        <a className="text-sm font-medium text-text-secondary hover:text-white transition-colors" href="#">Solutions</a>
-                        <a className="text-sm font-medium text-text-secondary hover:text-white transition-colors" href="#">ROI Calculator</a>
-                        <a className="text-sm font-medium text-text-secondary hover:text-white transition-colors" href="#">Pilot Program</a>
+                        <button
+                            onClick={() => scrollToSection('solutions')}
+                            className="text-sm font-medium text-text-secondary hover:text-white transition-colors"
+                        >
+                            Solutions
+                        </button>
+                        <button
+                            onClick={() => scrollToSection('roi-calculator')}
+                            className="text-sm font-medium text-text-secondary hover:text-white transition-colors"
+                        >
+                            ROI Calculator
+                        </button>
+                        <button
+                            onClick={() => scrollToSection('pilot-program')}
+                            className="text-sm font-medium text-text-secondary hover:text-white transition-colors"
+                        >
+                            Pilot Program
+                        </button>
                     </nav>
                     <div className="flex items-center gap-4">
                         <button
@@ -35,7 +57,10 @@ const LandingPage: React.FC = () => {
                         >
                             Login
                         </button>
-                        <button className="bg-primary hover:bg-primary/90 text-white text-sm font-bold px-5 py-2.5 rounded-lg transition-all shadow-[0_0_15px_rgba(48,136,117,0.4)] hover:shadow-[0_0_25px_rgba(48,136,117,0.6)]">
+                        <button
+                            onClick={() => navigate('/login')}
+                            className="bg-primary hover:bg-primary/90 text-white text-sm font-bold px-5 py-2.5 rounded-lg transition-all shadow-[0_0_15px_rgba(48,136,117,0.4)] hover:shadow-[0_0_25px_rgba(48,136,117,0.6)]"
+                        >
                             Join the Pilot
                         </button>
                     </div>
@@ -57,11 +82,17 @@ const LandingPage: React.FC = () => {
                         The MLS commission guarantee is gone. Dwellingly replaces it with a legally binding buyer representation framework. Secure your future revenue today.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                        <button className="bg-primary hover:bg-primary/90 text-white text-lg font-bold px-8 py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(48,136,117,0.5)] hover:shadow-[0_0_30px_rgba(48,136,117,0.7)] hover:-translate-y-1 flex items-center justify-center gap-2">
+                        <button
+                            onClick={() => navigate('/login')}
+                            className="bg-primary hover:bg-primary/90 text-white text-lg font-bold px-8 py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(48,136,117,0.5)] hover:shadow-[0_0_30px_rgba(48,136,117,0.7)] hover:-translate-y-1 flex items-center justify-center gap-2"
+                        >
                             Join the Pilot
                             <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
                         </button>
-                        <button className="glass-panel hover:bg-white/5 text-white text-lg font-bold px-8 py-4 rounded-xl transition-all border border-white/20 hover:border-primary/50 flex items-center justify-center gap-2">
+                        <button
+                            onClick={() => window.open('/dwellingly.html', '_blank')}
+                            className="glass-panel hover:bg-white/5 text-white text-lg font-bold px-8 py-4 rounded-xl transition-all border border-white/20 hover:border-primary/50 flex items-center justify-center gap-2"
+                        >
                             <span className="material-symbols-outlined text-[20px]">play_circle</span>
                             Watch 2-Min Demo
                         </button>
@@ -85,7 +116,7 @@ const LandingPage: React.FC = () => {
                 </section>
 
                 {/* Problem vs Solution Comparison */}
-                <section className="w-full max-w-7xl px-6 py-20">
+                <section id="solutions" className="w-full max-w-7xl px-6 py-20">
                     <div className="flex flex-col gap-4 mb-12">
                         <h2 className="text-3xl md:text-4xl font-bold text-white font-display">Systemic Risk vs. Dwellingly Solution</h2>
                         <p className="text-text-secondary max-w-2xl text-lg">The post-NAR settlement landscape exposes agents to unprecedented income volatility. Compare the old verbal agreements with our guaranteed infrastructure.</p>
@@ -170,7 +201,7 @@ const LandingPage: React.FC = () => {
                 </section>
 
                 {/* ROI Calculator Section */}
-                <section className="w-full max-w-7xl px-6 py-20">
+                <section id="roi-calculator" className="w-full max-w-7xl px-6 py-20">
                     <div className="glass-panel rounded-2xl p-8 md:p-12 relative overflow-hidden border border-primary/20">
                         {/* Background decorative element */}
                         <div className="absolute -right-20 -top-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -235,7 +266,10 @@ const LandingPage: React.FC = () => {
                                             <p className="text-primary font-bold text-xl">300x</p>
                                         </div>
                                     </div>
-                                    <button className="w-full mt-4 bg-white text-black hover:bg-gray-200 font-bold py-3 rounded-lg transition-colors flex justify-center items-center gap-2">
+                                    <button
+                                        onClick={() => navigate('/login')}
+                                        className="w-full mt-4 bg-white text-black hover:bg-gray-200 font-bold py-3 rounded-lg transition-colors flex justify-center items-center gap-2"
+                                    >
                                         Lock in These Rates
                                     </button>
                                 </div>
@@ -297,7 +331,7 @@ const LandingPage: React.FC = () => {
                 </section>
 
                 {/* Final CTA */}
-                <section className="w-full max-w-5xl px-6 py-20 text-center relative overflow-hidden group">
+                <section id="pilot-program" className="w-full max-w-5xl px-6 py-20 text-center relative overflow-hidden group">
                     <div className="absolute inset-0 bg-primary/20 -z-10 group-hover:bg-primary/30 transition-colors duration-500 rounded-3xl"></div>
                     <div className="relative overflow-hidden rounded-3xl bg-primary p-12 md:p-20">
                         {/* Decorative background pattern */}
@@ -306,10 +340,16 @@ const LandingPage: React.FC = () => {
                             <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight font-display">Ready to Secure Your Future?</h2>
                             <p className="text-white/80 text-lg max-w-2xl font-sans">Join the exclusive pilot program and be among the first agents to operate with guaranteed commission infrastructure.</p>
                             <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full justify-center">
-                                <button className="bg-white text-primary hover:bg-gray-100 text-lg font-bold px-8 py-4 rounded-xl transition-all shadow-lg min-w-[200px]">
+                                <button
+                                    onClick={() => navigate('/login')}
+                                    className="bg-white text-primary hover:bg-gray-100 text-lg font-bold px-8 py-4 rounded-xl transition-all shadow-lg min-w-[200px]"
+                                >
                                     Apply for Pilot
                                 </button>
-                                <button className="bg-black/20 hover:bg-black/30 text-white border border-white/20 text-lg font-bold px-8 py-4 rounded-xl transition-all min-w-[200px]">
+                                <button
+                                    onClick={() => navigate('/login')}
+                                    className="bg-black/20 hover:bg-black/30 text-white border border-white/20 text-lg font-bold px-8 py-4 rounded-xl transition-all min-w-[200px]"
+                                >
                                     Talk to Sales
                                 </button>
                             </div>
