@@ -343,7 +343,7 @@ const LandingPage: React.FC = () => {
                     </div>
                 </div>
                 <div className="max-w-7xl mx-auto px-6 mt-8 pt-8 border-t border-white/5 text-center md:text-left">
-                    <p className="text-xs text-text-secondary/50">© 2024 Dwellingly Inc. All rights reserved.</p>
+                    <p className="text-xs text-text-secondary/50">© 2026 Dwellingly Inc. All rights reserved.</p>
                 </div>
             </footer>
         </div>
