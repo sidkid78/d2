@@ -1,5 +1,5 @@
 import React from 'react';
-import QRCode from 'react-qr-code';
+import QRCodeComponent from 'react-qr-code';
 import type { BuyerInvite } from '../../types/domain';
 import { format } from 'date-fns';
 
@@ -8,6 +8,9 @@ interface Props {
 }
 
 export const CertificatePrintView: React.FC<Props> = ({ invite }) => {
+    // Defensive check for QRCode component due to potential ESM/CJS interop issues in Vite
+    const QRCode = (QRCodeComponent as any).default || QRCodeComponent;
+
     const verifyUrl = `${window.location.origin}/verify/${invite.certificateId}`;
     const signedDate = invite.auditEvents.find(e => e.type === 'AGREEMENT_SIGNED')?.timestamp;
 
