@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { mockService } from '../services/MockService';
 import type { BuyerInvite } from '../types/domain';
 import { getBuyerInitials } from '../lib/logic/auditEngine';
-import { ShieldCheck, Calendar, ArrowRight, UserCheck, Download, Loader2 } from 'lucide-react';
+import { ShieldCheck, Calendar, ArrowRight, UserCheck, Download, Loader2, Shield } from 'lucide-react';
 import { format } from 'date-fns';
 import { CertificatePrintView } from '../components/buyer/CertificatePrintView';
 import { generatePDFFromElement } from '../lib/utils/pdfGenerator';
@@ -26,92 +26,120 @@ export const VerifyPage: React.FC = () => {
     }, [certificateId]);
 
     if (loading) {
-        return <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">Loading Verification...</div>;
+        return (
+            <div className="min-h-screen bg-background-dark flex items-center justify-center p-4">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-sm font-bold text-primary uppercase tracking-[0.2em]">Verifying Credentials...</p>
+                </div>
+            </div>
+        );
     }
 
     if (!invite) {
         return (
-            <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-                <div className="bg-white p-8 rounded-3xl max-w-md w-full text-center border border-slate-200 shadow-xl shadow-slate-200">
-                    <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 ring-8 ring-red-50">
-                        <ShieldCheck size={32} />
+            <div className="min-h-screen bg-background-dark flex items-center justify-center p-4 relative overflow-hidden">
+                <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-red-500/5 rounded-full blur-[120px]"></div>
+
+                <div className="glass-panel p-8 md:p-10 rounded-3xl max-w-md w-full text-center border-red-500/20 shadow-2xl animate-in zoom-in-95 duration-300 relative z-10">
+                    <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 border border-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.1)]">
+                        <Shield size={32} />
                     </div>
-                    <h2 className="text-2xl font-black text-slate-900 mb-2">Invalid Certificate</h2>
-                    <p className="text-slate-600 mb-8 font-medium">This Commission Protection Certificate ID could not be found or is no longer valid.</p>
-                    <Link to="/" className="text-brand-600 font-bold hover:text-brand-700">Return Home</Link>
+                    <h2 className="text-2xl font-bold text-white mb-2 font-display">Invalid Certificate</h2>
+                    <p className="text-text-muted mb-8 font-medium">This Commission Protection Certificate ID could not be found or is no longer valid.</p>
+                    <Link to="/" className="w-full glass-button py-3 font-bold group">
+                        Return Home
+                        <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                    </Link>
                 </div>
             </div>
         );
     }
 
     const initials = getBuyerInitials(invite.buyerName);
-    const signedDate = invite.auditEvents.find(e => e.type === 'AGREEMENT_SIGNED')?.timestamp;
+    const signedDate = invite.auditEvents.find((e: any) => e.type === 'AGREEMENT_SIGNED')?.timestamp;
 
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 md:p-8">
-            <div className="bg-white max-w-lg w-full rounded-3xl shadow-xl shadow-slate-200 border border-slate-200 overflow-hidden animate-in zoom-in-95 duration-500">
+        <div className="min-h-screen bg-background-dark flex flex-col items-center justify-center p-4 md:p-8 relative overflow-x-hidden transition-colors duration-700">
+            {/* Background Decorations */}
+            <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px]"></div>
+            <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[60%] bg-primary/5 rounded-full blur-[100px]"></div>
+
+            <div className="max-w-lg w-full rounded-[2.5rem] shadow-2xl border border-white/5 overflow-hidden animate-in zoom-in-95 duration-500 relative z-10 glass-panel">
 
                 {/* Certificate Header Section */}
-                <div className="bg-emerald-600 px-8 py-10 text-center relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMOCA4Wk04IDBMMCA4WiIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjEiPjwvcGF0aD4KPC9zdmc+')]"></div>
+                <div className="bg-primary/20 bg-linear-to-br from-primary/30 to-background-dark/80 px-8 py-12 text-center relative overflow-hidden group">
+                    <div className="absolute inset-0 opacity-10 bg-dots"></div>
+                    <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white/20 to-transparent"></div>
+                    <div className="absolute inset-x-0 bottom-0 h-px bg-linear-to-r from-transparent via-primary/40 to-transparent"></div>
 
                     <div className="relative z-10">
-                        <div className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl ring-4 ring-white/30">
-                            <ShieldCheck className="w-10 h-10 text-white" />
+                        <div className="w-20 h-20 bg-white/5 backdrop-blur-xl rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(48,137,118,0.3)] border border-white/10 group-hover:scale-105 transition-transform duration-500">
+                            <ShieldCheck className="w-10 h-10 text-primary drop-shadow-[0_0_8px_rgba(48,137,118,0.5)]" />
                         </div>
-                        <h1 className="text-3xl font-black text-white mb-2 tracking-tight">Active Representation</h1>
-                        <p className="text-emerald-50 font-medium opacity-90 tracking-widest uppercase text-sm">Verified Certificate</p>
+                        <h1 className="text-3xl font-bold text-white mb-2 tracking-tight font-display">Active Representation</h1>
+                        <p className="text-primary font-bold tracking-[0.2em] uppercase text-[10px]">Verified Certificate</p>
                     </div>
                 </div>
 
                 {/* Certificate Body Section */}
-                <div className="px-8 py-10 space-y-8 bg-white relative">
+                <div className="px-8 py-12 space-y-10 relative">
 
                     {/* Status Badge Overlap */}
-                    <div className="absolute -top-5 inset-x-0 flex justify-center">
-                        <div className="bg-white px-4 py-1.5 rounded-full border border-slate-100 shadow-sm flex items-center gap-2 text-sm font-bold text-slate-700 font-mono">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <div className="absolute -top-6 inset-x-0 flex justify-center">
+                        <div className="bg-background-dark/80 backdrop-blur-md px-5 py-2 rounded-full border border-primary/20 shadow-[0_0_15px_rgba(48,137,118,0.1)] flex items-center gap-2.5 text-xs font-bold text-white font-mono">
+                            <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_var(--color-primary)]"></span>
                             ID: {invite.certificateId}
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-8 mt-4">
-                        <div>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Agent</p>
-                            <div className="flex items-start gap-2">
-                                <div className="bg-brand-50 p-2 rounded-lg text-brand-600 mt-0.5">
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-10 mt-4">
+                        <div className="animate-in fade-in slide-in-from-left-4 duration-700 delay-100">
+                            <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-3 ml-1">Agent Details</p>
+                            <div className="flex items-start gap-3 glass-card p-4 rounded-2xl border-white/5 bg-white/2 hover:bg-white/4 transition-colors">
+                                <div className="bg-primary/10 p-2 rounded-xl text-primary border border-primary/20 shrink-0">
                                     <UserCheck size={16} />
                                 </div>
-                                <div>
-                                    <p className="font-bold text-slate-900 leading-tight">Mock Texas Agent</p>
-                                    <p className="text-sm text-slate-500 mt-0.5">Dwellingly Realty</p>
+                                <div className="min-w-0">
+                                    <p className="font-bold text-white leading-tight truncate font-display text-sm">Mock Texas Agent</p>
+                                    <p className="text-[11px] text-text-muted mt-1 font-medium truncate">Dwellingly Realty</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Client</p>
-                            <div className="flex items-center gap-2">
-                                <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-700 shadow-inner">
+                        <div className="animate-in fade-in slide-in-from-right-4 duration-700 delay-100">
+                            <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-3 ml-1">Client Profile</p>
+                            <div className="flex items-center gap-3 glass-card p-4 rounded-2xl border-white/5 bg-white/2 hover:bg-white/4 transition-colors">
+                                <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center font-bold text-primary shadow-inner text-sm shrink-0">
                                     {initials}
                                 </div>
-                                <p className="text-xs text-slate-500 font-medium bg-slate-50 px-2 py-1 rounded-md border border-slate-100">Privacy Protected</p>
+                                <div className="min-w-0">
+                                    <p className="text-[11px] text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20 w-fit truncate uppercase tracking-widest">Protected</p>
+                                    <p className="text-[10px] text-text-muted mt-1 font-bold uppercase tracking-widest leading-none">Privacy Active</p>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="col-span-2">
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Agreement Verified</p>
-                            <div className="flex items-center gap-2 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                <Calendar className="text-slate-400" size={18} />
-                                <p className="font-bold text-slate-700">
-                                    {signedDate ? format(new Date(signedDate), "MMMM d, yyyy 'at' h:mm a") : 'Unknown'}
-                                </p>
+                        <div className="col-span-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+                            <p className="text-[10px] font-bold text-text-muted uppercase tracking-[0.2em] mb-3 ml-1">Verification Timeline</p>
+                            <div className="flex items-center gap-4 glass-card p-5 rounded-2xl border-white/5 bg-white/2 hover:bg-white/4 transition-colors">
+                                <div className="bg-white/5 p-2.5 rounded-xl border border-white/10 shrink-0">
+                                    <Calendar className="text-primary" size={20} />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-0.5">Signed Securely At</p>
+                                    <p className="font-bold text-white font-display text-base">
+                                        {signedDate ? format(new Date(signedDate), "MMMM d, yyyy 'at' h:mm a") : 'Unknown'}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="pt-6 border-t border-slate-100 flex flex-col gap-4">
-                        <p className="text-sm text-slate-500 font-medium text-center">This digital certificate verifies active, exclusive representation conforming to local regulations.</p>
+                    <div className="pt-8 border-t border-white/5 flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+                        <p className="text-[11px] text-text-muted font-medium text-center leading-relaxed">
+                            This cryptographically signed digital certificate verifies active, exclusive representation conforming to local regulations and Dwellingly Commission Protection™ standards.
+                        </p>
 
                         <button
                             onClick={async () => {
@@ -123,14 +151,15 @@ export const VerifyPage: React.FC = () => {
                                 }
                             }}
                             disabled={isDownloading}
-                            className="bg-slate-900 hover:bg-black text-white px-6 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+                            className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4.5 px-6 rounded-2xl shadow-[0_8px_25px_rgba(48,137,118,0.25)] hover:shadow-[0_12px_35px_rgba(48,137,118,0.4)] border border-primary/40 transition-all transform hover:-translate-y-1 active:translate-y-0 text-base flex items-center justify-center gap-3 relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
                         >
+                            <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]"></div>
                             {isDownloading ? (
-                                <Loader2 className="w-5 h-5 animate-spin" />
+                                <Loader2 className="w-5 h-5 animate-spin relative z-10" />
                             ) : (
-                                <Download className="w-5 h-5 text-emerald-400" />
+                                <Download className="w-5 h-5 text-white/90 relative z-10" />
                             )}
-                            Download Official Certificate
+                            <span className="relative z-10">Download Official Certificate</span>
                         </button>
                     </div>
                 </div>
@@ -140,9 +169,10 @@ export const VerifyPage: React.FC = () => {
             {/* Hidden Print View for PDF generation */}
             <CertificatePrintView invite={invite} />
 
-            <div className="mt-8 text-center">
-                <Link to="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors group">
-                    Powered by Dwellingly <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            <div className="mt-12 text-center animate-in fade-in duration-1000 delay-500">
+                <Link to="/" className="inline-flex items-center gap-2.5 px-4 py-2 bg-white/2 border border-white/5 rounded-full text-[11px] font-bold text-text-muted hover:text-white hover:bg-white/5 transition-all group">
+                    Powered by <span className="text-white font-display uppercase tracking-widest">Dwellingly</span>
+                    <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
             </div>
         </div>
